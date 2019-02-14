@@ -1,0 +1,174 @@
+{% extends 'public/base.html' %}
+
+{% block title %}
+<title>商品添加</title>
+{% endblock %}
+
+{% block con %}
+<div class="container-fluid am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-9">
+            <div class="page-header-heading"><span class="am-icon-users page-header-heading-icon"></span> 商品添加</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+        <div class="widget am-cf">
+            <div class="widget-body am-fr">
+                <form action="{% url 'goods_insert' %}" method="post" enctype="multipart/form-data" class="am-form tpl-form-line-form" >
+                    {% csrf_token %}
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label">所属分类</label>
+                        <div class="am-u-sm-9">
+                            <select name="tid" data-am-selected="">
+                                {% for d in data %}
+                                    {% if d.pid == 0 %}
+                                        <option disabled value="{{ d.id }}">{{ d.name }}</option>
+                                    {% else %}
+                                        <option value="{{ d.id }}" >&nbsp&nbsp&nbsp&nbsp{{ d.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 商品名 <span class="tpl-form-line-small-title">Title</span></label>
+                        <div class="am-u-sm-9">
+                            <input type="text" class="tpl-form-input" name="title">
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 价格 <span class="tpl-form-line-small-title">Price</span></label>
+                        <div class="am-u-sm-9">
+                            <input type="text" class="tpl-form-input" name="price">
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 库存 <span class="tpl-form-line-small-title">Number</span></label>
+                        <div class="am-u-sm-9">
+                            <input type="text" class="tpl-form-input" name="num" >
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                      <label for="user-name" class="am-u-sm-3 am-form-label">
+                       商品状态
+                          <span class="tpl-form-line-small-title">State</span>
+                       </label>
+                      <div class="am-u-sm-9">
+                       <select name="status" data-am-selected="">
+                          <option value="0">新发布</option>
+                          <option value="1">热卖</option>
+                          <option value="2">下架</option>
+                       </select>
+                      </div>
+                    </div>
+                    <div class="am-form-group">
+                       <label for="user-weibo" class="am-u-sm-3 am-form-label">
+                        上传缩略图
+                        </label>
+                        <div class="am-u-sm-9">
+                            <div class="am-form-group am-form-file">
+                                <div id="preview">
+                                    <img id="imghead" style="width: 150px" border=0 src='/static/pics/user.jpg'>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="am-btn am-btn-danger am-btn-sm">
+                                            <i class="am-icon-cloud-upload"></i> 上传头像
+                                    </button>
+                                    <input name="pic" type="file" onchange="previewImage(this)" multiple="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <link rel="stylesheet" type="text/css" href="/ueditor/UE/third-party/SyntaxHighlighter/shCoreDefault.css">
+                    <script type="text/javascript" src="/ueditor/UE/third-party/SyntaxHighlighter/shCore.js"></script>
+                    <script type="text/javascript" src="/ueditor/UE/ueditor.config.js"></script>
+                    <script type="text/javascript" src="/ueditor/UE/ueditor.all.min.js"></script>
+                    <script type="text/javascript" src="/ueditor/UE/lang/zh-cn/zh-cn.js"></script>
+                    <div class="am-form-group">
+                        <label for="num" class="am-u-sm-3 am-form-label"> 详情 <span class="tpl-form-line-small-title">Details</span></label>
+                        <div class="am-u-sm-9">
+                            <!-- <textarea name="info" class="" rows="10"  placeholder="商品详情"></textarea> -->
+                            <div id="editor" name="info" type="text/plain" style="height:500px;color: #000;"></div>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <div class="am-u-sm-9 am-u-sm-push-3">
+                            <button class="am-btn am-btn-primary tpl-btn-bg-color-success ">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+        var ue = UE.getEditor('editor');
+        SyntaxHighlighter.all();
+</script>
+<style type="text/css">
+#preview{width:150px;height:150px;border:1px solid #000;overflow:hidden;}
+#imghead {filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image);}
+</style>
+<script type="text/javascript">
+      //图片上传预览    IE是用了滤镜。
+        function previewImage(file)
+        {
+          var MAXWIDTH  = 150;
+          var MAXHEIGHT = 150;
+          var div = document.getElementById('preview');
+          if (file.files && file.files[0])
+          {
+              div.innerHTML ='<img id=imghead>';
+              var img = document.getElementById('imghead');
+              img.onload = function(){
+                var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+                img.width  =  rect.width;
+                img.height =  rect.height;
+//                 img.style.marginLeft = rect.left+'px';
+                img.style.marginTop = rect.top+'px';
+              }
+              var reader = new FileReader();
+              reader.onload = function(evt){img.src = evt.target.result;}
+              reader.readAsDataURL(file.files[0]);
+          }
+          else //兼容IE
+          {
+            var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+            file.select();
+            var src = document.selection.createRange().text;
+            div.innerHTML = '<img id=imghead>';
+            var img = document.getElementById('imghead');
+            img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+            var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+            status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+            div.innerHTML = "<div id=divhead style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+          }
+        }
+        function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+            var param = {top:0, left:0, width:width, height:height};
+            if( width>maxWidth || height>maxHeight )
+            {
+                rateWidth = width / maxWidth;
+                rateHeight = height / maxHeight;
+
+                if( rateWidth > rateHeight )
+                {
+                    param.width =  maxWidth;
+                    param.height = Math.round(height / rateWidth);
+                }else
+                {
+                    param.width = Math.round(width / rateHeight);
+                    param.height = maxHeight;
+                }
+            }
+            param.left = Math.round((maxWidth - param.width) / 2);
+            param.top = Math.round((maxHeight - param.height) / 2);
+            return param;
+        }
+</script>
+{% endblock %}
+

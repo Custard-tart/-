@@ -1,0 +1,68 @@
+{% extends 'public/base.html' %}
+
+{% block title %}
+<title>用户订单详情</title>
+{% endblock %}
+<link rel="stylesheet" type="text/css" href="/static/app/css/order.css">
+<link rel="stylesheet" type="text/css" href="/static/app/css/order-app.css">
+{% block link %}
+
+{% endblock %}
+
+{% block con %}
+<div class="container-fluid am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-9">
+            <div class="page-header-heading"><span class="am-icon-users page-header-heading-icon"></span>订单详情</div>
+        </div>
+    </div>
+</div>
+<div>
+    <table class="am-table">
+        <thead>
+            <tr style="color: #fff">
+                <th>下单时间: {{ order.addtime|date:'Y-m-d H:i:s' }}</th>
+                <th>订单号: {{ order.id }}</th>
+                <th>总金额: {{ order.totalprice }}</th>
+                <th>订单状态:
+                    {% if order.status == 0 %}
+                       未付款
+                    {% elif order.status == 1 %}
+                        已付款
+                    {% elif order.status == 2 %}
+                        已完成
+                    {% elif order.status == 3 %}
+                        已取消
+                    {% endif %}
+                </th>
+            </tr>
+            <tr style="color: #fff">
+                <th>收货人: {{ address.addresspreson }}</th>
+                <th>收货地址: {{ address.address }}</th>
+                <th>收货人联系方式: {{ address.addressphone }}</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+    <table class="am-table">
+        <thead>
+            <tr style="color: #fff">
+                <th>商品缩略图</th>
+                <th>商品名称</th>
+                <th>单价</th>
+                <th>购买数量</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for g in order.orderinfo_set.all %}
+            <tr style="color: #fff">
+                <td><img src="{{ g.goodsid.pic }}" style="max-width: 100px"></td>
+                <td>{{ g.goodsid.title }}</td>
+                <td>{{ g.price }}</td>
+                <td>{{ g.num }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

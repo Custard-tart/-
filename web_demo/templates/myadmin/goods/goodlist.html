@@ -1,0 +1,152 @@
+{% extends 'public/base.html' %}
+
+{% block title %}
+<title>商品列表</title>
+{% endblock %}
+
+{% block con %}
+<div class="container-fluid am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-9">
+            <div class="page-header-heading"><span class="am-icon-users page-header-heading-icon"></span> 商品列表 </div>
+        </div>
+    </div>
+</div>
+<div class="widget am-cf">
+    <div class="widget-body  am-fr">
+        <div class="am-u-sm-12 am-u-md-9 am-u-lg-6">
+            <div class="am-form-group">
+                <div class="am-btn-toolbar">
+                    <div class="am-btn-group am-btn-group-xs">
+                        <button type="button" class="am-btn am-btn-default am-btn-success"><span class="am-icon-plus"></span>
+                            <a href="{% url 'goods_add' %}" style="text-decoration: none;color: #fff"> 添加商品 </a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="">
+            <div class="am-u-sm-12 am-u-md-3 am-u-lg-3">
+                <div class="am-form-group tpl-table-list-select">
+                    <select name="types" data-am-selected="{btnSize: 'sm'}" style="display: none;">
+                        <option {% if request.GET.types == 'title' %} selected {% endif %} value="title">商品标题</option>
+                        <option {% if request.GET.types == 'price' %} selected {% endif %} value="price">价格</option>
+                        <option {% if request.GET.types == 'num' %} selected {% endif %} value="num">库存</option>
+                        <option {% if request.GET.types == 'tid' %} selected {% endif %} value="tid">所属分类</option>
+                        <option {% if request.GET.types == 'status' %} selected {% endif %} value="status">状态</option>
+                    </select>
+                </div>
+            </div>
+            <div class="am-u-sm-12 am-u-md-3 am-u-lg-3">
+                <div class="am-input-group am-input-group-sm tpl-form-border-form cl-p">
+                    <input name="keywords" type="text" class="am-form-field " value="{{ request.GET.keywords }}" placeholder="请输入搜索内容">
+                    <span class="am-input-group-btn">
+                        <button class="am-btn  am-btn-default am-btn-success tpl-table-list-field am-icon-search"></button>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <div class="am-u-sm-12">
+            <table width="100%" class="am-table am-table-compact am-table-striped tpl-table-black ">
+                <thead>
+                    <tr>
+                        <th>缩略图</th>
+                        <th>ID</th>
+                        <th>商品标题</th>
+                        <th>价格</th>
+                        <th>库存</th>
+                        <th>所属分类</th>
+                        <th>状态</th>
+                        <th>点击量</th>
+                        <th>发布时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for d in data %}
+                    <tr class="gradeX">
+                        <td>
+                            <img src="{{ d.pic }}" class="tpl-table-line-img" alt="" style="width: 100px;height: 100px">
+                        </td>
+                        <td class="am-text-middle goodsid">{{ d.id }}</td>
+                        <td class="am-text-middle">{{ d.title }}</td>
+                        <td class="am-text-middle">{{ d.price }}</td>
+                        <td class="am-text-middle">{{ d.num }}</td>
+                        <td class="am-text-middle">{{ d.tid.name }}</td>
+                        <td class="am-text-middle states">
+                            {% if d.status == 0 %}
+                                新发布
+                            {% elif d.status == 1 %}
+                                热销
+                            {% else %}
+                                下架
+                            {% endif %}
+                        </td>
+                    <td class="am-text-middle">{{ d.clicknum }}</td>
+                    <td class="am-text-middle">{{ d.addtime|date:'Y-m-d H:i:s' }}</td>
+                        <td class="am-text-middle">
+                            <div class="tpl-table-black-operation">
+                                <a href="{% url 'goods_change' d.id %}">
+                                    <i class="am-icon-pencil"></i> 编辑
+                                </a>
+                                <a href="javascript:" class="tpl-table-black-operation-del">
+                                    <i class="am-icon-trash"></i> 删除
+                                </a>
+                            </div>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+
+                    <!-- more data -->
+                </tbody>
+            </table>
+        </div>
+        <div class="am-u-lg-12 am-cf">
+
+            <div class="am-fr">
+                <ul class="am-pagination tpl-pagination">
+                    {#<li class="am-disabled"><a href="#">«</a></li>#}
+                    {# 加载自定义过滤器 #}
+                    {% load pages %}
+
+                    {# 调用自定义过滤器 django模板封装的方法  可以使用users调用paginator #}
+                    {% ShowPages_user data.paginator.num_pages request %}
+
+                    {# <li class="am-active"><a href="#"></a></li> #}
+                    {#<li><a href="#">»</a></li>#}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // 删除操作
+        $('.tpl-table-black-operation-del').click(function () {
+            // 获取商品id值
+            id = $(this).parents('tr').find('.goodsid').text();
+            // 获取当前tr
+            tr = $(this).parents('tr');
+            // 发送ajax
+            $.get('{% url "goods_del" %}', {'id':id}, function(data){
+                if(data.error===0){
+                    tr.remove();
+                    alert(data.msg);
+                }
+            })
+        });
+
+        // 状态筛选
+        $('.sel').change(function () {
+            // 获取选中的内容
+            var text = $(this).text();
+            alert(text);
+            // 通过内容获取元素
+            td = $('.states').text();
+            console.log(td);
+
+        })
+
+    </script>
+{% endblock %}

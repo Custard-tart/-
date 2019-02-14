@@ -1,0 +1,151 @@
+{% extends 'public/base.html' %}
+
+{% block title %}
+<title>分类列表</title>
+{% endblock %}
+
+{% block con %}
+<div class="container-fluid am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-9">
+            <div class="page-header-heading"><span class="am-icon-users page-header-heading-icon"></span> 分类列表 </div>
+        </div>
+    </div>
+</div>
+<div class="widget am-cf">
+    <div class="widget-body  am-fr">
+        <div class="am-u-sm-6 am-u-md-6 am-u-lg-9">
+            <div class="am-form-group">
+                <div class="am-btn-toolbar">
+                    <div class="am-btn-group am-btn-group-xs">
+                        <button type="button" class="am-btn am-btn-default am-btn-success"><span class="am-icon-plus"></span>
+                            <a href="{% url 'type_add' %}" style="text-decoration: none;color: #fff"> 添加分类 </a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form action="">
+            <div class="am-u-sm-6 am-u-md-6 am-u-lg-3">
+                <div class="am-input-group am-input-group-sm tpl-form-border-form cl-p">
+                    <input name="keywords" value="{{ request.GET.keywords }}" type="text" class="am-form-field">
+                    <span class="am-input-group-btn">
+                        <button class="am-btn  am-btn-default am-btn-success tpl-table-list-field am-icon-search"></button>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <div class="am-u-sm-12">
+            <table width="100%" class="am-table am-table-compact am-table-striped tpl-table-black ">
+                <thead>
+                    <tr>
+                        <th>编号</th>
+                        <th>分类名</th>
+                        <th>所属分级</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for d in typelist %}
+                    <tr class="gradeX">
+                        <td class="am-text-middle typeid">{{ d.id }}</td>
+                        <td class="am-text-middle" style="width: 362px">
+                            {% if d.pid == 0 %}
+                                <span class="type-change">{{ d.name }}</span>
+                            {% else %}
+                                <span>&nbsp&nbsp&nbsp&nbsp</span><span class="type-change">{{ d.name }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="am-text-middle">
+                            {% if d.pid == 0 %}
+                                顶级分类
+                            {% else %}
+                                {{ d.pname }}
+                            {% endif %}
+                        </td>
+
+                        <td class="am-text-middle">
+                            <div class="tpl-table-black-operation">
+                                <a href="javascript:" class="tpl-table-black-operation-del type-del">
+                                    <i class="am-icon-trash"></i> 删除
+                                </a>
+                            </div>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+
+                    <!-- more data -->
+                </tbody>
+            </table>
+        </div>
+        <div class="am-u-lg-12 am-cf">
+
+            <div class="am-fr">
+                <ul class="am-pagination tpl-pagination">
+                    {#<li class="am-disabled"><a href="#">«</a></li>#}
+                    {# 加载自定义过滤器 #}
+                    {% load pages %}
+
+                    {# 调用自定义过滤器 django模板封装的方法  可以使用users调用paginator #}
+                    {% ShowPages_type typelist.paginator.num_pages request %}
+
+                    {# <li class="am-active"><a href="#"></a></li> #}
+                    {#<li><a href="#">»</a></li>#}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 修改分类名
+    $('.type-change').dblclick(function () {
+        // 获取当前元素的类名
+        var name = $(this).text();
+        // 创建input元素
+        inp = $('<input type="text" value="'+name+'" style="color:black">');
+        //放入当前元素中
+        $(this).html(inp);
+        // 选中inp中的所有内容
+        inp.select();
+        // 获取当前元素的id
+        var id = $(this).parents('tr').find('.typeid').text();
+        // 获取span元素
+        var span = $(this);
+
+        // 绑定失去焦点事件
+        inp.blur(function () {
+            // 获取用户输入的内容
+            var newname = $(this).val();
+            // 判断分类名是否修改
+            if(newname===name){
+                $(this).parents('tr').find('.type-change').html(name)
+            }else{
+                // 发送ajax
+                $.get('{% url "type_change" %}', {'id':id,'newname':newname}, function(data){
+                    if(data.error === 0){
+                        span.html(newname);
+                        alert(data.msg)
+                    }
+                }, 'json')
+            }
+        })
+
+    });
+
+    // 删除分类
+    $('.type-del').click(function () {
+        // 获取分类的id值
+        var id = $(this).parents('tr').find('.typeid').text();
+        // 获取整行
+        var tr = $(this).parents('tr');
+        // 发送ajax请求
+        $.get('{% url "type_del" %}', {'id':id}, function(data){
+            if(data.error === 0){
+                tr.remove();
+            }
+            alert(data.msg)
+        }, 'json')
+    })
+</script>
+{% endblock %}

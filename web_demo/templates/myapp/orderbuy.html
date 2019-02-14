@@ -1,0 +1,38 @@
+{% extends 'public/appbase.html' %}
+
+{% block title %}
+<title>订单支付</title>
+{% endblock %}
+
+{% block main %}
+<div class="mainbody cart" style="margin-top: 100px">
+
+<center>
+    <img src="/static/buy.png">
+    <p style="color: black;font-size: 16px">
+        总金额:
+        <span style="color: red">{{ totalprice }}</span>
+    </p>
+    <p style="color: black;font-size: 16px">
+        收货人:
+        <span style="color: red">{{ address.addresspreson }}</span>
+    </p>
+    <p style="color: black;font-size: 16px">
+        收货地址:
+        <span style="color: red">{{ address.address }}</span>
+    </p>
+    <p style="color: black;font-size: 16px">
+        联系方式:
+        <span style="color: red">{{ address.addressphone }}</span>
+    </p>
+    <form action="{% url 'buysuccess' %}" style="display: inline-block">
+    <input type="hidden" name="orderid" value="{{ orderid }}">
+    <button class="btn btn-info">支付</button>
+    </form>
+    <a class="btn btn-info" href="{% url 'buycancel' orderid %}" onClick="return confirm('确认取消订单?次操作无法撤销!');">取消</a>
+</center>
+
+</div>
+
+{% endblock %}
+

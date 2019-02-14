@@ -1,0 +1,221 @@
+{% extends 'public/appbase.html' %}
+
+{% block title %}
+<title>确认订单</title>
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" type="text/css" href="/static/app/css/cart.css">
+<link rel="stylesheet" type="text/css" href="/static/app/css/cart-app.css">
+{% endblock %}
+
+{% block main %}
+<div class="mainbody cart" style="margin-top: 100px">
+    <div class="container">
+        <div class="col-md-12" style="background: #fff">
+            <!-- 新增收货地址 -->
+            <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">
+                新增收货地址
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">
+                                    &times;
+                                </span>
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                新增收货地址
+                            </h4>
+                        </div>
+                        <form action="{% url 'addressinsert' %}" method="post">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>
+                                        收货人
+                                    </label>
+                                    <input type="text" name="addresspreson" class="form-control" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label >
+                                        收货地址
+                                    </label>
+                                    <input type="text" name="address" class="form-control" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        联系方式
+                                    </label>
+                                    <input type="text" name="addressphone" class="form-control" autocomplete="off">
+                                </div>
+                                <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="1" name="status">设为默认地址
+                                </label>
+                            </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    取消
+                                </button>
+                                <button class="btn btn-primary">
+                                    保存
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin: 20px 0;padding:  20px 0;background: #fff">
+            {% for a in address %}
+            {% if a.status == 1 %}
+                <div class="col-md-3">
+                    <div class="useraddress" style="font-size: 16px;color: black;line-height: 30px;border: 2px dashed red" check="1" addressid="{{ a.id }}">
+                        <p>收货人:{{ a.addresspreson }}</p>
+                        <p>收货地址:{{ a.address }}</p>
+                        <p>
+                            收货人电话:{{ a.addressphone }}
+                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                            <span style="font-size: 12px;color: #0a6999">默认地址</span>
+                        </p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-md-3">
+                <div class="useraddress" style="font-size: 16px;color: black;line-height: 30px;border: 2px solid #ccc" addressid="{{ a.id }}">
+                    <p>收货人:{{ a.addresspreson }}</p>
+                    <p>收货地址:{{ a.address }}</p>
+                    <p>收货人电话:{{ a.addressphone }}</p>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <!-- 购物车详情头 -->
+        <table class="cart-header">
+            <tbody>
+                <tr>
+                    <td class="cart-col-select col-md-3 col-xs-3 col-sm-3">
+                        <div class="cart-select-all JSelectAll">
+                            <span class="cart-select-title">
+                                商品缩略图
+                            </span>
+                        </div>
+                    </td>
+                    <td class="cart-col-name col-md-3 hidden-xs hidden-sm">
+                        商品
+                    </td>
+                    <td class="cart-col-price col-md-2 hidden-xs hidden-sm">
+                        单价(元)
+                    </td>
+                    <td class="cart-col-number col-md-2 hidden-xs hidden-sm">
+                        数量
+                    </td>
+                    <td class="cart-col-total col-md-1 hidden-xs hidden-sm">
+                        小计(元)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- 购物车详情头 E-->
+        <!-- 购物清单信息列表 -->
+        <div class="cart-merchant-list">
+            <div class="cart-merchant">
+                <table class="cart-merchant-body">
+                    <tbody>
+                    {% for g in goodslist %}
+                        <tr class="cart-product" goodsid="{{ g.goodsid }}">
+                            <td class="cart-col-select col-md-3 col-xs-3 col-sm-3">
+                                <img src="{{ g.items.pic }}" alt="{{ g.items.title }}" style="max-width: 100px">
+                            </td>
+                            <td class="cart-col-name col-md-3 hidden-xs hidden-sm">
+                                <p>{{ g.items.title }}</p>
+                            </td>
+                            <td class="cart-col-price col-md-2 hidden-xs hidden-sm">
+                                <p>
+                                    <span class="cart-product-price">{{ g.items.price }}</span>
+                                </p>
+                            </td>
+                            <td class="cart-col-number col-md-2 hidden-xs hidden-sm">
+                                {{ g.num }}
+                            </td>
+                            <td class="cart-col-total col-md-1 hidden-xs hidden-sm">
+                                <span class="cart-product-price total">{{ g.price }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- 购物清单信息列表 E-->
+    </div>
+    <!-- 结算详情 -->
+    <div class="cart-footer" id="cartFooter">
+        <div class="container">
+            <div class="cart-footer-left col-md-6 col-xs-4 col-sm-4">
+                <!-- <span class="cart-remove-selected" id="removeSelected">删除选中的商品</span> -->
+            </div>
+            <div class="cart-footer-right col-md-5 col-md-offset-1 col-sm-offset-2 col-xs-8 col-sm-6">
+                <span class="cart-footer-sum">
+                    <span class="cart-footer-text">
+                        已优惠
+                    </span>
+                    <span class="cart-footer-num red" id="totalDiscount">0.00</span>
+                    <span class="cart-footer-text">元， 合计(不含运费)：</span>
+                    <span class="cart-footer-total" id="totalPrice">0</span>
+                </span>
+                <form action="{% url 'orderinsert'  %}" method="post" style="display: inline-block;">
+                    {% csrf_token %}
+                    <input id="submit" name="addressid" type="text" hidden value="">
+                    <button class="mz-btn success" id="cartSubmit">提交订单</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- 结算详情 E-->
+</div>
+
+<script>
+// 获取所有的小计并累加
+var price = 0;
+$('.total').each(function () {
+    price += Number($(this).text());
+});
+$('#totalPrice').text(price);
+
+// 获取默认地址
+$('.useraddress').each(function () {
+    if($(this).attr('check')){
+        $('#submit').val($(this).attr('check'));
+        $('#submit').val($(this).attr('addressid'));
+    }
+});
+
+// 选择收货地址
+$('.useraddress').click(function () {
+    $('.useraddress').css('border','2px solid #ccc');
+    $(this).css('border','2px dashed red');
+    $('.useraddress').removeAttr('check');
+    $(this).attr('check','1');
+    $('#submit').val($(this).attr('addressid'));
+});
+
+// 提交订单
+$('#cartSubmit').click(function () {
+    // 判断当前是否选择了地址
+    if(!$('#submit').val()){
+        alert('您还没有选择收货地址!');
+        return false
+    }
+});
+
+
+</script>
+{% endblock %}
+

@@ -1,0 +1,111 @@
+{% extends 'public/base.html' %}
+
+{% block title %}
+<title>用户信息更新</title>
+{% endblock %}
+
+{% block con %}
+<div class="container-fluid am-cf">
+    <div class="row">
+        <div class="am-u-sm-12 am-u-md-12 am-u-lg-9">
+            <div class="page-header-heading"><span class="am-icon-users page-header-heading-icon"></span> 用户信息修改</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+        <div class="widget am-cf">
+            <div class="widget-body am-fr">
+                <form action="{% url 'user_update' %}" method="post" enctype="multipart/form-data" class="am-form tpl-form-line-form" >
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ userinfo.id }}" name="id">
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 用户名 <span class="tpl-form-line-small-title">Username</span></label>
+                        <div class="am-u-sm-9">
+                            <input value="{{ userinfo.username }}" type="text" class="tpl-form-input" name="username" required maxlength="20" minlength="2">
+                            <small>请填写用户名2-20字左右</small>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 年龄 <span class="tpl-form-line-small-title">Age</span></label>
+                        <div class="am-u-sm-9">
+                            <input value="{{ userinfo.age }}" type="text" class="tpl-form-input" name="age" >
+                            <small>请填写用户年龄</small>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 性别 <span class="tpl-form-line-small-title">Sex</span></label>
+                        <div class="am-u-sm-9">
+                            <div class="am-form-group">
+                        <label class="am-radio-inline">
+                            <input type="radio" value="1" {% if userinfo.sex == 1 %} checked {% endif %} name="sex"> 男
+                        </label>
+                        <label class="am-radio-inline">
+                            <input type="radio" value="0" {% if userinfo.sex == 0 %} checked {% endif %} name="sex"> 女
+                        </label>
+                    </div>
+                            <small>请选择性别</small>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 邮箱 <span class="tpl-form-line-small-title">Email</span></label>
+                        <div class="am-u-sm-9">
+                            <input value="{{ userinfo.email }}" type="email" class="tpl-form-input" name="email" required maxlength="50">
+                            <small>请填写邮箱50字以内</small>
+                        </div>
+                    </div>
+                    <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 电话 <span class="tpl-form-line-small-title">Phone</span></label>
+                        <div class="am-u-sm-9">
+                            <input value="{{ userinfo.phone }}" type="text" class="tpl-form-input" name="phone" required minlength="11" maxlength="11">
+                            <small>请填写用户电话号码</small>
+                        </div>
+                    </div>
+                     <div class="am-form-group">
+                        <label for="user-name" class="am-u-sm-3 am-form-label"> 用户状态 <span class="tpl-form-line-small-title">status</span></label>
+                        <div class="am-u-sm-9">
+                            <div class="am-form-group">
+                        <label class="am-radio-inline">
+                            <input type="radio" value="0" {% if userinfo.status == 0 %} checked {% endif %} name="status"> 正常
+                        </label>
+                        <label class="am-radio-inline">
+                            <input type="radio" value="1" {% if userinfo.status == 1 %} checked {% endif %} name="status"> 禁用
+                        </label>
+                    </div>
+                            <small>请选择性别</small>
+                        </div>
+                    </div>
+
+                           <div class="am-form-group">
+                               <label for="user-weibo" class="am-u-sm-3 am-form-label">
+                                上传头像
+                                </label>
+                               <div class="am-u-sm-9">
+                                   <div class="am-form-group am-form-file">
+                                       <div class="tpl-form-file-img">
+                                           <img src="{{ userinfo.pic }}" alt="" style="width: 100px;">
+                                       </div>
+                                       <button type="button" class="am-btn am-btn-danger am-btn-sm">
+                                            <i class="am-icon-cloud-upload"></i> 更换头像
+                                        </button>
+                                       <input name="pic" type="file" multiple="">
+                                   </div>
+
+                               </div>
+                           </div>
+
+                    <div class="am-form-group">
+                        <div class="am-u-sm-9 am-u-sm-push-3">
+                            <button class="am-btn am-btn-primary tpl-btn-bg-color-success ">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
